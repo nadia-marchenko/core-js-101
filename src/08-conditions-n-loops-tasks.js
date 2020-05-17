@@ -100,8 +100,17 @@ function getSumBetweenNumbers(n1, n2) {
  *   10,1,1   =>  false
  *   10,10,10 =>  true
  */
-function isTriangle(/* a, b, c */) {
-  throw new Error('Not implemented');
+function isTriangle(a, b, c) {
+  if (a + b <= c) {
+    return false;
+  }
+  if (a + c <= b) {
+    return false;
+  }
+  if (b + c <= a) {
+    return false;
+  }
+  return true;
 }
 
 
@@ -211,8 +220,26 @@ function findFirstSingleChar(/* str */) {
  *   5, 3, true, true   => '[3, 5]'
  *
  */
-function getIntervalString(/* a, b, isStartIncluded, isEndIncluded */) {
-  throw new Error('Not implemented');
+function getIntervalString(a, b, isStartIncluded, isEndIncluded) {
+  let res = '';
+  if (isStartIncluded) {
+    res += '[';
+  } else {
+    res += '(';
+  }
+  if (a < b) {
+    res += a;
+    res += `, ${b}`;
+  } else {
+    res += b;
+    res += `, ${a}`;
+  }
+  if (isEndIncluded) {
+    res += ']';
+  } else {
+    res += ')';
+  }
+  return res;
 }
 
 
