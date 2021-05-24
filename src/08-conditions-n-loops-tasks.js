@@ -193,8 +193,14 @@ function isInsideCircle(/* circle, point */) {
  *   'abracadabra'  => 'c'
  *   'entente' => null
  */
-function findFirstSingleChar(/* str */) {
-  throw new Error('Not implemented');
+function findFirstSingleChar(str) {
+  const arr = str.split('');
+  for (let i = 0; i < arr.length; i += 1) {
+    if (arr.filter((el) => el === arr[i]).length <= 1) {
+      return arr[i];
+    }
+  }
+  return null;
 }
 
 
@@ -255,8 +261,8 @@ function getIntervalString(a, b, isStartIncluded, isEndIncluded) {
  * 'rotator' => 'rotator'
  * 'noon' => 'noon'
  */
-function reverseString(/* str */) {
-  throw new Error('Not implemented');
+function reverseString(str) {
+  return str.split('').reverse().join('');
 }
 
 
@@ -272,8 +278,8 @@ function reverseString(/* str */) {
  *   87354 => 45378
  *   34143 => 34143
  */
-function reverseInteger(/* num */) {
-  throw new Error('Not implemented');
+function reverseInteger(num) {
+  return +num.toString().split('').reverse().join('');
 }
 
 
@@ -297,8 +303,39 @@ function reverseInteger(/* num */) {
  *   5436468789016589 => false
  *   4916123456789012 => false
  */
-function isCreditCardNumber(/* ccn */) {
-  throw new Error('Not implemented');
+
+function isEvenSequience(arr) {
+  return (arr.length - 1) % 2 === 0;
+}
+
+function multiplyToNineEven(arr) {
+  return arr.map((el, index) => (index % 2 === 0 ? el * 2 : el));
+}
+
+function multiplyToNineOdd(arr) {
+  return arr.map((el, index) => (index % 2 === 0 ? el : el * 2));
+}
+
+function replaceTwoDigitNum(arr) {
+  const restArr = arr.map((el) => {
+    let newEl = el;
+    if (el / 10 >= 1) {
+      newEl = +el.toString().split('').reduce((a, b) => +a + +b, 0);
+    }
+    return newEl;
+  });
+  return restArr;
+}
+
+function isCreditCardNumber(ccn) {
+  const arr = ccn.toString().split('').map((el) => +el);
+  let res = true;
+  if (isEvenSequience(arr)) {
+    res = replaceTwoDigitNum(multiplyToNineOdd(arr)).reduce((a, b) => a + b, 0) % 10 === 0;
+  } else {
+    res = replaceTwoDigitNum(multiplyToNineEven(arr)).reduce((a, b) => a + b, 0) % 10 === 0;
+  }
+  return res;
 }
 
 /**
@@ -315,8 +352,12 @@ function isCreditCardNumber(/* ccn */) {
  *   10000 ( 1+0+0+0+0 = 1 ) => 1
  *   165536 (1+6+5+5+3+6 = 26,  2+6 = 8) => 8
  */
-function getDigitalRoot(/* num */) {
-  throw new Error('Not implemented');
+function getDigitalRoot(num) {
+  let res = num;
+  while (res / 10 > 1) {
+    res = +res.toString().split('').reduce((a, b) => +a + +b, 0);
+  }
+  return res;
 }
 
 
@@ -366,8 +407,8 @@ function isBracketsBalanced(/* str */) {
  *    365, 4  => '11231'
  *    365, 10 => '365'
  */
-function toNaryString(/* num, n */) {
-  throw new Error('Not implemented');
+function toNaryString(num, n) {
+  return num.toString(n);
 }
 
 

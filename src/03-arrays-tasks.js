@@ -270,17 +270,26 @@ function getSecondItems(arr) {
  *  [ 1,2,3,4,5 ] => [ 1, 2,2, 3,3,3, 4,4,4,4, 5,5,5,5,5 ]
  */
 function propagateItemsByPositionIndex(arr) {
-  let strRes = '';
+  let resArr = [];
+  resArr.length = ((2 + (arr.length - 1)) / 2) * arr.length;
+  let count = 0;
   arr.map((el, index) => {
-    let curEl = el;
-    if (curEl === null) {
-      curEl = 'null';
-    }
-    const res = curEl.toString().repeat(index + 1);
-    strRes += res;
-    return strRes;
+    resArr = resArr.fill(el, count, count + index + 1);
+    count += index + 1;
+    return el;
   });
-  return strRes.split('');
+  return resArr;
+  // let strRes = '';
+  // arr.map((el, index) => {
+  //   let curEl = el;
+  //   if (curEl === null) {
+  //     curEl = 'null';
+  //   }
+  //   const res = curEl.toString().repeat(index + 1);
+  //   strRes += res;
+  //   return strRes;
+  // });
+  // return strRes.split('');
 }
 
 
@@ -487,8 +496,26 @@ function sortCitiesArray(arr) {
  *           [0,0,0,1,0],
  *           [0,0,0,0,1]]
  */
-function getIdentityMatrix(/* n */) {
-  throw new Error('Not implemented');
+function getIdentityMatrix(n) {
+  const resArr = [];
+  resArr.length = n;
+  const innerArr = [];
+  innerArr.length = n;
+  innerArr.fill(0, 0, n);
+  resArr.fill(innerArr, 0, n);
+  return resArr.map((el, index) => {
+    let newEl = el;
+    newEl = el.map((innerEl, innerIndex) => {
+      let res = 0;
+      if (innerIndex === index) {
+        res = 1;
+      } else {
+        res = 0;
+      }
+      return res;
+    });
+    return newEl;
+  });
 }
 
 /**
@@ -504,8 +531,28 @@ function getIdentityMatrix(/* n */) {
  *     0, 100 => [ 0, 1, 2, ..., 100 ]
  *     3, 3   => [ 3 ]
  */
-function getIntervalArray(/* start, end */) {
-  throw new Error('Not implemented');
+function getIntervalArray(start, end) {
+  const resArr = [];
+  const newArr = [];
+  newArr.push(start);
+  let currentEl = start;
+  resArr.push(start);
+  if (start !== end) {
+    if (start <= 0) {
+      resArr.length = Math.abs(start) + Math.abs(end) + 1;
+    } else {
+      resArr.length = Math.abs(start) + Math.abs(end) - 1;
+    }
+    resArr.fill(0);
+    resArr.map((el, index) => {
+      if (index !== 0) {
+        currentEl += 1;
+        newArr.push(currentEl);
+      }
+      return el;
+    });
+  }
+  return newArr;
 }
 
 /**
@@ -553,8 +600,28 @@ function distinct(arr) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+
+function groupBy(obj, propertyToGroup) {
+  const unicPropes = [...new Set(obj.map((el) => propertyToGroup(el)))];
+  const result = [];
+  unicPropes.map((el) => result.push([el]));
+  result.map((el) => {
+    if (obj.filter((innerEl) => propertyToGroup(innerEl) === el[0])) {
+      el.push(obj.filter((innerEl) => propertyToGroup(innerEl) === el[0]));
+    }
+    return el;
+  });
+  return result;
+}
+
+function group(array, keySelector, valueSelector) {
+  const resMap = new Map();
+  const groupByArr = groupBy(array, keySelector);
+  groupByArr.map((el) => {
+    resMap.set(el[0], el[1].map((innerEl) => valueSelector(innerEl)));
+    return el;
+  });
+  return resMap;
 }
 
 
@@ -571,8 +638,8 @@ function group(/* array, keySelector, valueSelector */) {
  *   [[1, 2], [3, 4], [5, 6]], (x) => x     =>   [ 1, 2, 3, 4, 5, 6 ]
  *   ['one','two','three'], x=>x.split('')  =>   ['o','n','e','t','w','o','t','h','r','e','e']
  */
-function selectMany(/* arr, childrenSelector */) {
-  throw new Error('Not implemented');
+function selectMany(arr, childrenSelector) {
+  return arr.map((el) => childrenSelector(el)).flat();
 }
 
 
@@ -588,8 +655,14 @@ function selectMany(/* arr, childrenSelector */) {
  *   ['one','two','three'], [2]       => 'three'  (arr[2])
  *   [[[ 1, 2, 3]]], [ 0, 0, 1 ]      => 2        (arr[0][0][1])
  */
-function getElementByIndexes(/* arr, indexes */) {
-  throw new Error('Not implemented');
+function getElementByIndexes(arr, indexes) {
+  const str = indexes.join('');
+  let res = arr;
+  indexes.map((el, index) => {
+    res = res[str.charAt(index)];
+    return el;
+  });
+  return res;
 }
 
 
@@ -611,8 +684,25 @@ function getElementByIndexes(/* arr, indexes */) {
  *   [ 1, 2, 3, 4, 5, 6, 7, 8 ]   =>  [ 5, 6, 7, 8, 1, 2, 3, 4 ]
  *
  */
-function swapHeadAndTail(/* arr */) {
-  throw new Error('Not implemented');
+function swapHeadAndTail(arr) {
+  let firstPart = [];
+  let secondPart = [];
+  let resArr = [];
+  const halfOfLength = Math.ceil(arr.length / 2);
+  if (arr.length % 2 === 0) {
+    firstPart = arr.slice(0, halfOfLength);
+    secondPart = arr.slice(halfOfLength);
+    resArr = resArr.concat(secondPart);
+    resArr = resArr.concat(firstPart);
+  } else {
+    const halfOfArr = arr[halfOfLength - 1];
+    firstPart = arr.slice(0, halfOfLength - 1);
+    secondPart = arr.slice(halfOfLength);
+    resArr = resArr.concat(secondPart);
+    resArr.push(halfOfArr);
+    resArr = resArr.concat(firstPart);
+  }
+  return resArr;
 }
 
 

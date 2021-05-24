@@ -202,8 +202,17 @@ function extractEmails(str) {
  *             '└──────────┘\n'
  *
  */
-function getRectangleString(/* width, height */) {
-  throw new Error('Not implemented');
+function getRectangleString(width, height) {
+  const arr = [];
+  const firstRow = `┌${'─'.repeat(width - 2)}┐`;
+  const lastRow = `└${'─'.repeat(width - 2)}┘`;
+  const middleRow = `│${' '.repeat(width - 2)}│`;
+  arr.push(firstRow);
+  for (let i = 0; i < height - 2; i += 1) {
+    arr.push(middleRow);
+  }
+  arr.push(lastRow);
+  return `${arr.join('\n')}\n`;
 }
 
 
@@ -223,28 +232,37 @@ function getRectangleString(/* width, height */) {
  *    => 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm'
  *
  */
-function encodeToRot13(/* str */) {
-  // const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-  // const res = [];
-  // let arr = str.split(' ');
-  // for (let i = 0; i < str.length; i += 1) {
-  //   arr.forEach((el) => {
-  //     if (alphabet.indexOf(el.charAt(i)) <= 13
-  //     || (alphabet.indexOf(el.charAt(i)) >= 26 && alphabet.indexOf(el.charAt(i)) <= 39)) {
-  //       let newWord;
-  //       newWord += (alphabet[alphabet.indexOf(el.charAt(i)) + 13]);
-  //       res.push(newWord);
-  //       console.log('res: ' + res + ' i: ' + i);
-  //       console.log('arr: ' + arr + ' i: ' + i);
-  //     } else {
-  //       el.charAt(i) == (alphabet[alphabet.indexOf(el.charAt(i)) - 13]);
-  //       console.log('res: ' + res + ' i: ' + i);
-  //       console.log('arr: ' + arr + ' i: ' + i);
-  //     }
-  //   });
-  // }
-  // return arr;
-  throw new Error('Not implemented');
+
+function isInUpperCase(letter) {
+  return letter === letter.toUpperCase();
+}
+
+function encodeToRot13(str) {
+  const wordArr = str.split('');
+  const firstPart = 'ABCDEFGHIJKLM'.split('');
+  const secondPart = 'NOPQRSTUVWXYZ'.split('');
+  let res = '';
+  for (let i = 0; i < wordArr.length; i += 1) {
+    if (/[.?!:;'" ]/.test(wordArr[i])) {
+      res += wordArr[i];
+    } else if (firstPart.includes(wordArr[i].toUpperCase())) {
+      const editIndex = firstPart.findIndex((el) => el === wordArr[i].toUpperCase());
+      if (isInUpperCase(wordArr[i])) {
+        res += secondPart[editIndex].toUpperCase();
+      } else {
+        res += secondPart[editIndex].toLowerCase();
+      }
+    } else {
+      const editIndex = secondPart.findIndex((el) => el === wordArr[i].toUpperCase());
+      if (isInUpperCase(wordArr[i])) {
+        res += firstPart[editIndex].toUpperCase();
+      } else {
+        res += firstPart[editIndex].toLowerCase();
+      }
+    }
+  }
+  return res;
+  // throw new Error('Not implemented');
 }
 
 /**
@@ -289,8 +307,12 @@ function isString(value) {
  *   'Q♠' => 50
  *   'K♠' => 51
  */
-function getCardId(/* value */) {
-  throw new Error('Not implemented');
+function getCardId(value) {
+  const cards = ['A♣', '2♣', '3♣', '4♣', '5♣', '6♣', '7♣', '8♣', '9♣', '10♣', 'J♣', 'Q♣', 'K♣',
+    'A♦', '2♦', '3♦', '4♦', '5♦', '6♦', '7♦', '8♦', '9♦', '10♦', 'J♦', 'Q♦', 'K♦',
+    'A♥', '2♥', '3♥', '4♥', '5♥', '6♥', '7♥', '8♥', '9♥', '10♥', 'J♥', 'Q♥', 'K♥',
+    'A♠', '2♠', '3♠', '4♠', '5♠', '6♠', '7♠', '8♠', '9♠', '10♠', 'J♠', 'Q♠', 'K♠'];
+  return cards.findIndex((el) => el === value);
 }
 
 
