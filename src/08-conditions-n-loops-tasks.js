@@ -146,8 +146,9 @@ function isTriangle(a, b, c) {
  *   { top:20, left:20, width: 20, height: 20 }    =>  false
  *
  */
-function doRectanglesOverlap(/* rect1, rect2 */) {
-  throw new Error('Not implemented');
+function doRectanglesOverlap(rect1, rect2) {
+  return Math.abs(rect1.left - rect2.left) < Math.abs(rect1.width + rect2.width) / 2
+  && (Math.abs(rect1.top - rect2.top) < Math.abs(rect1.height + rect2.height) / 2);
 }
 
 
@@ -177,8 +178,9 @@ function doRectanglesOverlap(/* rect1, rect2 */) {
  *   { center: { x:0, y:0 }, radius:10 },  { x:10, y:10 }   => false
  *
  */
-function isInsideCircle(/* circle, point */) {
-  throw new Error('Not implemented');
+function isInsideCircle(circle, point) {
+  return ((point.x - circle.center.x) ** 2) + ((point.y - circle.center.y) ** 2)
+    < (circle.radius ** 2);
 }
 
 
@@ -382,8 +384,26 @@ function getDigitalRoot(num) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isBracketsBalanced(str) {
+  const obj = {
+    '[': ']',
+    '(': ')',
+    '{': '}',
+    '<': '>',
+  };
+  const stackArr = [];
+  const arr = str.split('');
+  for (let i = 0; i < arr.length; i += 1) {
+    const index = Object.values(obj).findIndex((innerEl) => innerEl === arr[i]);
+    if (Object.keys(obj).includes(arr[i])) {
+      stackArr.push(arr[i]);
+    } else if (stackArr[stackArr.length - 1] === Object.keys(obj)[index]) {
+      stackArr.pop();
+    } else {
+      return false;
+    }
+  }
+  return stackArr.length <= 0;
 }
 
 
@@ -424,8 +444,59 @@ function toNaryString(num, n) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/webalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+
+function getNRowFromArray(arr, n) {
+  return arr.map((el) => el[n]);
+}
+
+function isElementsSimilarInArray(arr) {
+  return arr.every((el, index, array) => el === array[0]);
+}
+
+function countSlashes(str) {
+  let counter = 0;
+  str.split('').map((el) => {
+    if (el === '/') {
+      counter += 1;
+    }
+    return el;
+  });
+  return counter;
+}
+
+function countMinSlashesFromArr(arr) {
+  return arr.map((el) => countSlashes(el)).sort((a, b) => a - b)[0];
+}
+
+function concatArraysInOne(arr1, arr2) {
+  let res = '';
+  for (let i = 0; i < arr2.length; i += 1) {
+    res += `${arr2[i]}${arr1[i]}`;
+  }
+  return arr2[1] ? res : arr1[0];
+}
+
+function getCommonDirectoryPath(pathes) {
+  let result;
+  const countMinSlashes = countMinSlashesFromArr(pathes);
+  const slashesArr = [];
+  slashesArr.length = countMinSlashes;
+  slashesArr.fill('/', 0, countMinSlashes);
+  const end = [];
+  const resArr = pathes.map((el) => el.split('/'));
+  if (resArr.some((el) => !(el[0] === ''))) {
+    result = '';
+  } else {
+    for (let i = 0; i < resArr[0].length; i += 1) {
+      if (isElementsSimilarInArray(getNRowFromArray(resArr, i))) {
+        end.push(getNRowFromArray(resArr, i)[0]);
+      } else if (isElementsSimilarInArray(getNRowFromArray(pathes.map((el) => el.split('')), 0)) && getNRowFromArray(pathes.map((el) => el.split('')), 0)[0] === '/' && end.length <= 1) {
+        end.push('');
+      }
+    }
+    result = concatArraysInOne(slashesArr, end);
+  }
+  return result;
 }
 
 
@@ -447,8 +518,22 @@ function getCommonDirectoryPath(/* pathes */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  let innerArr = [];
+  const resArr = [];
+  for (let i = 0; i < m1.length; i += 1) {
+    for (let j = 0; j < m2[0].length; j += 1) {
+      let newEl = 0;
+      for (let r = 0; r < m1[0].length; r += 1) {
+        newEl += m1[i][r] * m2[r][j];
+      }
+      innerArr.push(newEl);
+      newEl = 0;
+    }
+    resArr.push(innerArr);
+    innerArr = [];
+  }
+  return resArr;
 }
 
 
@@ -482,8 +567,49 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+
+function getLeftDiagonaleArray(arr) {
+  const resArr = [];
+  for (let i = 0; i < arr.length; i += 1) {
+    for (let j = 0; j < arr[i].length; j += 1) {
+      if (i === j) {
+        resArr.push(arr[i][j]);
+      }
+    }
+  }
+  return resArr;
+}
+
+function getRightDiagonaleArray(arr) {
+  const resArr = [];
+  for (let i = 0; i < arr.length; i += 1) {
+    for (let j = 0; j < arr[i].length; j += 1) {
+      if (j === arr[i].length - i - 1) {
+        resArr.push(arr[i][j]);
+      }
+    }
+  }
+  return resArr;
+}
+
+function evaluateTicTacToePosition(position) {
+  let res;
+  for (let i = 0; i < position.length; i += 1) {
+    if (isElementsSimilarInArray(getNRowFromArray(position, i))
+      && position[i].length === position.length) {
+      [res] = getNRowFromArray(position, i);
+    } else if (isElementsSimilarInArray(position[i])
+      && !res && position[i].length === position.length) {
+      [res] = position[i];
+    } else if (isElementsSimilarInArray(getLeftDiagonaleArray(position))
+      && !res && position[i].length === position.length) {
+      [res] = getLeftDiagonaleArray(position);
+    } else if (isElementsSimilarInArray(getRightDiagonaleArray(position))
+      && !res && position[i].length === position.length) {
+      [res] = getRightDiagonaleArray(position);
+    }
+  }
+  return res;
 }
 
 
