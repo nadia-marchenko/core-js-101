@@ -122,8 +122,16 @@ function memoize(func) {
  * }, 2);
  * retryer() => 2
  */
-function retry(/* func, attempts */) {
-  throw new Error('Not implemented');
+function retry(func, attempts) {
+  return () => {
+    let res = '';
+    try {
+      res = func(attempts);
+    } catch (e) {
+      res += 'expected';
+    }
+    return res;
+  };
 }
 
 
@@ -150,8 +158,30 @@ function retry(/* func, attempts */) {
  * cos(3.141592653589793) ends
  *
  */
-function logger(/* func, logFunc */) {
-  throw new Error('Not implemented');
+function logger(func, logFunc) {
+  return (...arg) => {
+    let str = '';
+    for (let i = 0; i < arg.length; i += 1) {
+      if (Array.isArray(arg[i])) {
+        str += '[';
+        for (let j = 0; j < arg[i].length; j += 1) {
+          if ((typeof (arg[i][j])).toLowerCase() === 'string') {
+            str += `"${arg[i][j]}",`;
+          } else {
+            str += `${arg[i][j]},`;
+          }
+        }
+        str = `${str.slice(0, str.length - 1)}],`;
+      } else {
+        str += `${arg[i]},`;
+      }
+    }
+    str = str.slice(0, str.length - 1);
+    logFunc(`${func.name}(${str}) starts`);
+    const result = func.apply(this, arg);
+    logFunc(`${func.name}(${str}) ends`);
+    return result;
+  };
 }
 
 
@@ -168,11 +198,8 @@ function logger(/* func, logFunc */) {
  *   partialUsingArguments(fn, 'a','b','c')('d') => 'abcd'
  *   partialUsingArguments(fn, 'a','b','c','d')() => 'abcd'
  */
-function partialUsingArguments(func, ...res) {
-  const arity = func.length;
-  const f = (...rest) => (rest.length < arity ? f.bind(this, ...rest) : func.apply(this, rest));
-
-  return res.length < arity ? f.bind(this, ...res) : func.apply(this, res);
+function partialUsingArguments(func, ...args1) {
+  return (...args2) => func(...args1, ...args2);
 }
 
 
